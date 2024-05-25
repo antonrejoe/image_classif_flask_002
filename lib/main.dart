@@ -81,13 +81,53 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     }
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: Text('Cat breed classifier'),
+  //     ),
+  //     body: Center(
+  //       child: Column(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: <Widget>[
+  //           if (_image != null)
+  //             Image.file(
+  //               File(_image!.path),
+  //               height: 500,
+  //               width: 500,
+  //               fit: BoxFit.cover,
+  //             )
+  //           else
+  //             Text('No image selected'),
+  //           SizedBox(height: 20),
+  //           ElevatedButton(
+  //             onPressed: _pickImage,
+  //             child: Text('Pick Image from Gallery'),
+  //           ),
+  //           SizedBox(height: 20),
+  //           Text(parse(result).body?.text ?? '',
+  //            style: TextStyle(
+  //           // Define your text style properties here
+  //         fontSize: 16, // Example font size
+  //         fontWeight: FontWeight.bold, // Example font weight
+  //         fontStyle: FontStyle.italic, // Example font style
+  //         color: Colors.blue, // Example text color
+  //         // Add more properties as needed
+  //       )),],
+  //       ),
+  //     ),
+  //   );
+  // }
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Cat breed classifier'),
-      ),
-      body: Center(
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('Cat breed classifier'),
+    ),
+    body: Container(
+      color: Colors.black, // Dark background color
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -99,24 +139,33 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
                 fit: BoxFit.cover,
               )
             else
-              Text('No image selected'),
+              Text(
+                'No image selected',
+                style: TextStyle(
+                  color: Colors.white, // Text color for dark background
+                  fontSize: 20, // Adjusted font size for visibility
+                ),
+              ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: _pickImage,
               child: Text('Pick Image from Gallery'),
             ),
             SizedBox(height: 20),
-            Text(parse(result).body?.text ?? '',
-             style: TextStyle(
-            // Define your text style properties here
-          fontSize: 16, // Example font size
-          fontWeight: FontWeight.bold, // Example font weight
-          fontStyle: FontStyle.italic, // Example font style
-          color: Colors.blue, // Example text color
-          // Add more properties as needed
-        )),],
+            Text(
+              parse(result).body?.text ?? '',
+              style: TextStyle(
+                color: Colors.white, // Text color for dark background
+                fontSize: 16, // Adjusted font size for visibility
+                fontWeight: FontWeight.bold, // Example font weight
+                fontStyle: FontStyle.italic, // Example font style
+              ),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }
