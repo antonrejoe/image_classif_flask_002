@@ -47,32 +47,36 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     print('Image picked successfully: $_image');
   }
 
-  Future classifyImage(File image) async {
-    final uri = Uri.parse(
-        'https://cat-dog-classifier-using-flask-xisi3zlsna-el.a.run.app/upload');
+uploadImage() async {
+  var uri = Uri.parse('http://your-flask-server-url/upload');
+  
+  // Replace 'image.path' with the path of your image file
+  var image = File('path_to_your_image.jpg');
 
-    var request = http.MultipartRequest('POST', uri);
-    String mimeType = lookupMimeType(image.path) ?? 'application/octet-stream';
-    var mimeTypeData = mimeType.split('/');
-    request.files.add(await http.MultipartFile.fromPath(
-      'photo',
-      image.path,
-      contentType: MediaType(mimeTypeData[0], mimeTypeData[1]),
-    ));
+  var request = http.MultipartRequest('POST', uri);
+  String mimeType = lookupMimeType(image.path) ?? 'application/octet-stream';
+  var mimeTypeData = mimeType.split('/');
+  request.files.add(await http.MultipartFile.fromPath(
+    'photo',
+    image.path,
+    contentType: MediaType(mimeTypeData[0], mimeTypeData[1]),
+  ));
 
-    var response = await request.send();
+  var response = await request.send();
 
-    if (response.statusCode == 200) {
-      final responseBody = await response.stream.bytesToString();
-      setState(() {
-        result = responseBody;
-      });
-    } else {
-      setState(() {
-        result = 'Failed to upload image';
-      });
-    }
+  if (response.statusCode == 200) {
+    final responseBody = await response.stream.bytesToString();
+    // Redirect to the result route in your Flutter app
+    var result = json.decode(responseBody);
+    var label = result['label'];
+    var probability = result['probability'];
+
+    // Now you can use this data to navigate or display in your Flutter app
+  } else {
+    // Handle error response
+    print('Failed to upload image');
   }
+} 
 
 
   @override
