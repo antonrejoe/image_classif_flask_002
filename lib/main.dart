@@ -1,6 +1,5 @@
-// import 'dart:convert';
+import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
@@ -30,60 +29,63 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
   File? file;
-  var result= "";
-  // var dataList = [];
+  var result = "";
 
   Future<void> _pickImage() async {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      result = "";
       setState(() {
         _image = image;
-        file = File(image!.path);
+        file = image != null ? File(image.path) : null;
       });
-      await classifyImage(file!);
+      if (file != null) {
+        await uploadImage();
+      }
     } catch (e) {
       print('Error picking image: $e');
     }
     print('Image picked successfully: $_image');
   }
 
-uploadImage() async {
-  var uri = Uri.parse('http://your-flask-server-url/upload');
-  
-  // Replace 'image.path' with the path of your image file
-  var image = File('path_to_your_image.jpg');
+  Future<void> uploadImage() async {
+    if (_image == null) return;
 
-  var request = http.MultipartRequest('POST', uri);
-  String mimeType = lookupMimeType(image.path) ?? 'application/octet-stream';
-  var mimeTypeData = mimeType.split('/');
-  request.files.add(await http.MultipartFile.fromPath(
-    'photo',
-    image.path,
-    contentType: MediaType(mimeTypeData[0], mimeTypeData[1]),
-  ));
+    var uri = Uri.parse('https://cat-breed-classifer-c2zvybgmgq-uc.a.run.app/upload');
+    var request = http.MultipartRequest('POST', uri);
 
-  var response = await request.send();
+    String? mimeType = lookupMimeType(_image!.path) ?? 'application/octet-stream';
+    var mimeTypeData = mimeType.split('/');
+    
+    request.files.add(await http.MultipartFile.fromPath(
+      'photo',
+      _image!.path,
+      contentType: MediaType(mimeTypeData[0], mimeTypeData[1]),
+    ));
 
-  if (response.statusCode == 200) {
-    final responseBody = await response.stream.bytesToString();
-    // Redirect to the result route in your Flutter app
-    var result = json.decode(responseBody);
-    var label = result['label'];
-    var probability = result['probability'];
+    var response = await request.send();
 
-    // Now you can use this data to navigate or display in your Flutter app
-  } else {
-    // Handle error response
-    print('Failed to upload image');
+    if (response.statusCode == 200) {
+      final responseBody = await response.stream.bytesToString();
+      setState(() {
+        var resultData = json.decode(responseBody);
+        var label = resultData['result'];
+        var probability = resultData['probability'];
+        result = "Label: $label, Probability: $probability";
+      });
+    } else {
+      setState(() {
+        result = 'Failed to upload image';
+      });
+      print('Failed to upload image');
+    }
   }
-} 
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cat Dog classifier'),
+        title: Text('Cat breed classifier'),
       ),
       body: Center(
         child: Column(
@@ -92,8 +94,8 @@ uploadImage() async {
             if (_image != null)
               Image.file(
                 File(_image!.path),
-                height: 200,
-                width: 200,
+                height: 500,
+                width: 500,
                 fit: BoxFit.cover,
               )
             else
@@ -104,8 +106,15 @@ uploadImage() async {
               child: Text('Pick Image from Gallery'),
             ),
             SizedBox(height: 20),
-            Text(parse(result).body?.text ?? ''),
-          ],
+            Text(parse(result).body?.text ?? '',
+             style: TextStyle(
+            // Define your text style properties here
+          fontSize: 16, // Example font size
+          fontWeight: FontWeight.bold, // Example font weight
+          fontStyle: FontStyle.italic, // Example font style
+          color: Colors.blue, // Example text color
+          // Add more properties as needed
+        )),],
         ),
       ),
     );
