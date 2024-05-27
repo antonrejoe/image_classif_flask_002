@@ -3,6 +3,9 @@
 ### Walkthrough of the App:
 [cat_breed_classifier_flask_api.webm](https://github.com/antonrejoe/image_classif_flask_002/assets/89238559/92f7983a-f72f-436a-8c8e-59189c22c94f)
 
+### API Link (gcp)
+- https://cat-breed-classifer-c2zvybgmgq-uc.a.run.app/upload
+
 ### Technologies Used:
     Flutter: Cross-platform framework for building native applications.
     Dart: Programming language used with Flutter.
